@@ -1,9 +1,11 @@
-var express = require('express')
+var express = require('express');
+var exphbs  = require('express-handlebars');
+
 var app = express()
 
-app.get('/', function (req, res) {
-  res.send('Hello, are you ready to play !')
-})
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+app.use(express.static('files'));
 
 var listChoices = ["rock","paper","scissors"];
 function randomPick(){
@@ -16,8 +18,10 @@ function confrontation(server, player){
             return "It's a draw, we both picker rock.";
         }else if(player === "paper"){
             return "You win, I picked rock.";
-        }else{
+        }else if(player==="scissors"){
             return "You are a big looser, I picked rock.";
+        } else {
+            return "You are a cheater, " + player + " is not allowed.";
         }
     }else if(server==="paper"){
         if(player === "rock"){
@@ -25,36 +29,38 @@ function confrontation(server, player){
             
         }else if(player === "paper"){
             return "It's a draw, we both picker paper.";
-        }else{
+        }else if(player==="scissors"){
             return "You win, I picked paper.";
+        } else {
+            return "You are a cheater, " + player + " is not allowed.";
         }
     }else {
         if(player === "rock"){
             return "You win, I picked scissors.";           
         }else if(player === "paper"){
             return "You are a big looser, I picked scissors.";
-        }else{
+        }else if(player==="scissors"){
             return "It's a draw, we both picker scissors.";
+        } else {
+            return "You are a cheater, " + player + " is not allowed.";
         }
     }
 }
 
-app.get('/rock/', function (req, res) {
+app.get('/', function (req, res) {
+    res.render('home',{userName:"Christophe"});
+});
+
+app.get('/game/:playerchoice/', function (req, res) {
     var serverPick = randomPick(),
-        playerPick = "rock"
-    res.send(confrontation(serverPick,playerPick));
-})
+        playerPick = req.params.playerchoice;
 
-app.get('/paper/', function (req, res) {
-      var serverPick = randomPick(),
-        playerPick = "paper"
-    res.send(confrontation(serverPick,playerPick));
-})
-
-app.get('/scissors/', function (req, res) {
-      var serverPick = randomPick(),
-        playerPick = "scissors"
-    res.send(confrontation(serverPick,playerPick));
+    res.render("game",{
+        serverChoice: serverPick,
+        playerChoice : playerPick,
+        gameResult:confrontation(serverPick,playerPick)
+    });
+    
 })
 
 app.listen(3000, function () {
