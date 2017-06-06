@@ -18,6 +18,7 @@
   "homepage": "https://github.com/christophe-essec/expressgame#readme",
   "dependencies": {
     "express": "^4.15.2",
-    "express-handlebars": "^3.0.0"
+    "express-handlebars": "^3.0.0",
+    "mongodb": "^2.2.28"
   }
 }
